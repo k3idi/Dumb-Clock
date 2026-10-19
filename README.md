@@ -8,13 +8,13 @@ To interact with the board, there is an LCD, 3 user buttons, 1 reset button, an 
 The purpose of this gadget is to be a bit silly and provide entartainment, as well as some useful metrics like temperature and humidity.
 It was a birthday present for my close friend.
 
-*picture of the board with the LCD on and some message on screen*
+![Photo of the PCB](media/DUMB_CLOCK.jpg)
 
-*link to a video of the device being used*
+[Video](https://youtu.be/7STXaMuA-sg) of the device being used.
 
 ### Sections of the PCB
 
-The design schematic and PCB files can be found [here](https://github.com/k3idi/electronics/tree/main/Dumb%20Clock/PCB%20design%20files).
+The design schematic and PCB files can be found [here](https://github.com/k3idi/Dumb-Clock/tree/main/PCB%20design%20files).
 
 ![Sections of the board](media/BOARD.png)
 
@@ -121,7 +121,9 @@ I chose this proverb, because my friend and I value honesty and because it inclu
 
 ### Photos of the board
 
-*Under title*: pictures of the board (before and after, lol)
+Unsoldered             |  Soldered
+:-------------------------:|:-------------------------:
+![unsoldered](media/DC_BOARD_UNSOLDERED.PNG)  |  ![soldered](media/DC_BOARD_SOLDERED.PNG)
 
 
 ### Mistakes and fixes
@@ -141,7 +143,9 @@ I fixed all these mistakes, after which I was able to successfully and reliably 
 
 When programming the ADC and converting the sensors' output voltages, I encountered a very peculiar issue where the output of the temperature sensor dropped about 20 degrees whenever I shone a flashlight at the light sensor.
 
-*pictures of the temperature dropping*
+Normal temperature         |  Low temperature
+:-------------------------:|:-------------------------:
+![unsoldered](media/BOARD_W_NORM_TEMP.PNG)  |  ![soldered](media/BOARD_W_LOW_TEMP.PNG)
 
 First I figured that maybe I was reading the light sensor output and assumed that it was the temperature sensor output, but that didn't make sense because the voltage output by the light sensor increases with more luminosity and since the temperature reading is also positively correlated with its sensor's output voltage, then temperature should have increased.
 
@@ -151,17 +155,15 @@ This theory never had much validity since according to its datasheet, the light 
 I uncovered what was actually wrong once I directly measured the voltages of the ADC circuit.
 Here is a picture of the voltage measured on the ADC's voltage reference pin.
 
-*picture of the oscilloscope*
+![oscilloscope](media/OSCILLOSCOPE_256.jpg)
 
 When measuring a sensor's output voltage, then I first set the ADC's reference voltage to 2.56V and if the conversion result is near 0x3ff (it is a 10-bit ADC) then I switch the reference voltage to 5V.
 The reason why I switch between the two reference voltages is because when the measured voltage is below 2.56V, then the ADC conversion is more accurate when compared against 2.56V rather than 5V (because the output has a resolution of 10 bits either way).
 
 As can be seen from the oscilloscope, then it takes about 2 ms (or 4000 clock cycles) for the reference voltage to settle from 5V to 2.56V.
 I didn't rush to change the capacitor on the AREF pin to reduce the discharge time, but first tried to solve the problem through software.
-Luckily, when I could solve it by setting the reference voltage back to 2.56V as soon as the ADC had completed any conversion with 5V reference voltage.
+Luckily, I could solve it by setting the reference voltage back to 2.56V as soon as the ADC had completed any conversion with 5V reference voltage.
 This way the default voltage on the AREF pin is 2.56V and is only temporarily changed when 5V is needed and there is enough time for the capacitor to discharge between measurements.
-
-*maybe add a picture from the code to show where you set the voltage back to 2.56V*
 
 ##### Light sensor output voltage
 
